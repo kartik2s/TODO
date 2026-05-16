@@ -2,7 +2,7 @@ import express from "express";
 import pg from "pg";
 
 const port = 3000;
-const app = express():
+const app = express();
 
 const db = new pg.Client({
     user: "postgres",
@@ -16,7 +16,9 @@ db.connect();
 app.use(express.urlencoded({extended: true}));
 app.use(express.static("public"));
 
-app.get("/", async(req, res){
+let items = [];
+
+app.get("/", async(req, res) =>{
     try {
         const result = await db.query("SELECT * FROM items ORDER BY id ASC");
         items = result.rows;
@@ -24,7 +26,7 @@ app.get("/", async(req, res){
             listTitle: "Today",
             listItems: items
         });
-    } catch (error) {
+    } catch (err) {
         console.log(err);
     }
 });
@@ -34,7 +36,7 @@ app.post("/add", async(req, res) =>{
     try {
         await db.query("INSERT INTO items (title) VALUES ($1)", [item]);
         res.redirect("/");
-    } catch (error) {
+    } catch (err) {
         console.log(err);
     }
 });
@@ -45,7 +47,7 @@ app.post("/edit", async(req, res) =>{
     try {
         await db.query("UPDATE items SET title = ($1) WHERE ID = $2", [item, id]);
         res.redirect("/");
-    } catch (error) {
+    } catch (err) {
         console.log(err);
     }
 });
@@ -53,9 +55,9 @@ app.post("/edit", async(req, res) =>{
 app.post("/delete", async(req, res) =>{
     const id = req.body.deleteItemId;
     try {
-        await db.query("DELETE * FROM items WHERE id = $1", [id]);
+        await db.query("DELETE FROM items WHERE id = $1", [id]);
         res.redirect("/");
-    } catch (error) {
+    } catch (err) {
         console.log(err);
     }
 });
