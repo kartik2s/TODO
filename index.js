@@ -1,28 +1,30 @@
 import express from "express";
 import pg from "pg";
+import env from "dotenv";
 
 const port = 3000;
 const app = express();
+env.config();
 
 const db = new pg.Client({
-    user: "postgres",
-    host: "localhost",
-    database: "TODO",
-    password: "123456",
-    port: 5432
+    user: process.env.PG_USER,
+    host: process.env.PG_HOST,
+    database: process.env.PG_DATABASE,
+    password: process.env.PG_PASSWORD,
+    port: process.env.PG_PORT,
 });
 db.connect();
 
-app.use(express.urlencoded({extended: true}));
+app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
 
 let items = [];
 
-app.get("/", async(req, res) =>{
+app.get("/", async (req, res) => {
     try {
         const result = await db.query("SELECT * FROM items ORDER BY id ASC");
         items = result.rows;
-        res.render("index.ejs",{
+        res.render("index.ejs", {
             listTitle: "Today",
             listItems: items
         });
@@ -31,7 +33,7 @@ app.get("/", async(req, res) =>{
     }
 });
 
-app.post("/add", async(req, res) =>{
+app.post("/add", async (req, res) => {
     const item = req.body.newItem;
     try {
         await db.query("INSERT INTO items (title) VALUES ($1)", [item]);
@@ -41,7 +43,7 @@ app.post("/add", async(req, res) =>{
     }
 });
 
-app.post("/edit", async(req, res) =>{
+app.post("/edit", async (req, res) => {
     const item = req.body.updatedItemTitle;
     const id = req.body.updatedItemId;
     try {
@@ -52,7 +54,7 @@ app.post("/edit", async(req, res) =>{
     }
 });
 
-app.post("/delete", async(req, res) =>{
+app.post("/delete", async (req, res) => {
     const id = req.body.deleteItemId;
     try {
         await db.query("DELETE FROM items WHERE id = $1", [id]);
@@ -62,6 +64,6 @@ app.post("/delete", async(req, res) =>{
     }
 });
 
-app.listen(port, ()=>{
+app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);
 });
