@@ -80,7 +80,7 @@ button {
 }
 
 .add {
-  background: #4f7cff;
+  background: green;
   color: white;
   width: 50px;
   height: 50px;
@@ -89,7 +89,7 @@ button {
 }
 
 .add:hover {
-  background: #315fe0;
+  background: rgb(13, 104, 13);
 }
 
 .edit-form {
